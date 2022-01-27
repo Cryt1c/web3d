@@ -9,6 +9,7 @@ import {
   matchDimensions,
   Point,
 } from "face-api.js";
+import { Scene } from "./components/Scene";
 
 const loadModels = async () => {
   await nets.tinyYolov2.loadFromUri("/models");
@@ -80,20 +81,21 @@ const App = () => {
   };
 
   useEffect(() => {
-    startVideo(videoElement.current);
+    // startVideo(videoElement.current);
     return () => {};
   }, []);
 
   return (
     <>
-      <video
+      {/* <video
         ref={videoElement}
         width="720"
         height="560"
         autoPlay
         muted
         onPlay={handlePlay}
-      ></video>
+      ></video> */}
+      <Scene></Scene>
     </>
   );
 };
