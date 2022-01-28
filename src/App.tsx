@@ -29,7 +29,7 @@ const startVideo = (video) => {
     .catch((err) => console.error(err));
 };
 
-const calcPupil = (points: Point[]): Point => {
+const calcPointAverage = (points: Point[]): Point => {
   const sum = points.reduce(
     (acc, cur) => new Point(cur.x + acc.x, cur.y + acc.y)
   );
@@ -39,6 +39,8 @@ const calcPupil = (points: Point[]): Point => {
 const App = () => {
   const videoElement = useRef<HTMLVideoElement>();
   const [eye, setEye] = useState<any>();
+  const [distance, setDistance] = useState<number>();
+  const [showScene, setShowScene] = useState(false);
 
   const handlePlay = () => {
     let canvas, displaySize;
@@ -65,17 +67,23 @@ const App = () => {
             //   .getContext("2d")
             //   .clearRect(0, 0, canvas.width, canvas.height);
             const resizedDimensions = resizeResults(detections, displaySize);
-            const leftEye = calcPupil(resizedDimensions.landmarks.getLeftEye());
-            // const rightEye = calcPupil(
-            //   resizedDimensions.landmarks.getRightEye()
-            // );
+            const leftEye = calcPointAverage(
+              resizedDimensions.landmarks.getLeftEye()
+            );
+            const rightEye = calcPointAverage(
+              resizedDimensions.landmarks.getRightEye()
+            );
             // canvas
             //   .getContext("2d")
             //   .fillRect(leftEye.x - 5, leftEye.y - 5, 10, 10);
             // canvas
             //   .getContext("2d")
             //   .fillRect(rightEye.x - 5, rightEye.y - 5, 10, 10);
-            if (leftEye) setEye(leftEye);
+
+            if (leftEye && rightEye) {
+              setEye(calcPointAverage([leftEye, rightEye]));
+              setDistance(rightEye.sub(leftEye).magnitude());
+            }
           }
         }, 100);
       })
@@ -89,6 +97,7 @@ const App = () => {
 
   return (
     <>
+      <button onClick={() => setShowScene(!showScene)}>Show Scene</button>
       <video
         ref={videoElement}
         width="720"
@@ -97,7 +106,7 @@ const App = () => {
         muted
         onPlay={handlePlay}
       ></video>
-      <Scene viewPoint={eye}></Scene>
+      {showScene && <Scene viewPoint={eye} distance={distance}></Scene>}
     </>
   );
 };

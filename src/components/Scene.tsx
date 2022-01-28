@@ -1,13 +1,14 @@
 import { Point } from "face-api.js";
-import React from 'react'
+import React from "react";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 interface SceneInterface {
   viewPoint: Point;
+  distance: number;
 }
 
-export const Scene = ({ viewPoint }: SceneInterface) => {
+export const Scene = ({ viewPoint, distance }: SceneInterface) => {
   // Scene
   const scene = new THREE.Scene();
 
@@ -29,12 +30,12 @@ export const Scene = ({ viewPoint }: SceneInterface) => {
   // Camera
   const camera = new THREE.PerspectiveCamera(
     45, // left
-    720/400, // right
+    720 / 400, // right
     1, // top
-    100, // bottom
+    100 // bottom
   );
 
-  camera.position.set(0, 0, -5);
+  camera.position.set(0, 0, -10);
   camera.lookAt(0, 0, 0);
 
   // Renderer
@@ -56,16 +57,16 @@ export const Scene = ({ viewPoint }: SceneInterface) => {
     if (viewPoint?.x && viewPoint?.y) {
       // Control
       let toleranceX = 0.02;
-      let toleranceY = 0.02;
+      let toleranceY = -0.02;
+      let toleranceZ = 0.02;
 
       let centerX = 720 * 0.5;
-      let centerY = 560 * 0.5;
+      let centerY = 400 * 0.5;
+      let centerZ = 60;
 
-      console.log(viewPoint);
       camera.position.x = (viewPoint.x - centerX) * toleranceX;
       camera.position.y = (viewPoint.y - centerY) * toleranceY;
-      camera.position.z = -10;
-      camera.position.y = 0;
+      camera.position.z = -10 + (distance - centerZ) * toleranceZ;
       camera.lookAt(0, 0, 0);
     }
     requestAnimationFrame(render);
