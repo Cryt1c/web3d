@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import {
   TinyFaceDetectorOptions,
@@ -29,7 +29,7 @@ const startVideo = (video) => {
     .catch((err) => console.error(err));
 };
 
-const calcPupil = (points: Point[]) => {
+const calcPupil = (points: Point[]): Point => {
   const sum = points.reduce(
     (acc, cur) => new Point(cur.x + acc.x, cur.y + acc.y)
   );
@@ -38,6 +38,7 @@ const calcPupil = (points: Point[]) => {
 
 const App = () => {
   const videoElement = useRef<HTMLVideoElement>();
+  const [eye, setEye] = useState<any>();
 
   const handlePlay = () => {
     let canvas, displaySize;
@@ -59,21 +60,22 @@ const App = () => {
             videoElement.current,
             new TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.5 })
           ).withFaceLandmarks();
-          if (canvas && displaySize) {
-            canvas
-              .getContext("2d")
-              .clearRect(0, 0, canvas.width, canvas.height);
+          if (canvas && displaySize && detections) {
+            // canvas
+            //   .getContext("2d")
+            //   .clearRect(0, 0, canvas.width, canvas.height);
             const resizedDimensions = resizeResults(detections, displaySize);
             const leftEye = calcPupil(resizedDimensions.landmarks.getLeftEye());
-            const rightEye = calcPupil(
-              resizedDimensions.landmarks.getRightEye()
-            );
-            canvas
-              .getContext("2d")
-              .fillRect(leftEye.x - 5, leftEye.y - 5, 10, 10);
-            canvas
-              .getContext("2d")
-              .fillRect(rightEye.x - 5, rightEye.y - 5, 10, 10);
+            // const rightEye = calcPupil(
+            //   resizedDimensions.landmarks.getRightEye()
+            // );
+            // canvas
+            //   .getContext("2d")
+            //   .fillRect(leftEye.x - 5, leftEye.y - 5, 10, 10);
+            // canvas
+            //   .getContext("2d")
+            //   .fillRect(rightEye.x - 5, rightEye.y - 5, 10, 10);
+            if (leftEye) setEye(leftEye);
           }
         }, 100);
       })
@@ -81,21 +83,21 @@ const App = () => {
   };
 
   useEffect(() => {
-    // startVideo(videoElement.current);
+    startVideo(videoElement.current);
     return () => {};
   }, []);
 
   return (
     <>
-      {/* <video
+      <video
         ref={videoElement}
         width="720"
         height="560"
         autoPlay
         muted
         onPlay={handlePlay}
-      ></video> */}
-      <Scene></Scene>
+      ></video>
+      <Scene viewPoint={eye}></Scene>
     </>
   );
 };
