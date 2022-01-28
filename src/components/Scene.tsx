@@ -27,18 +27,14 @@ export const Scene = ({ viewPoint }: SceneInterface) => {
   scene.add(directionalLight);
 
   // Camera
-  const width = 10;
-  const height = width * (window.innerHeight / window.innerWidth);
   const camera = new THREE.PerspectiveCamera(
-    width / -2, // left
-    width / 2, // right
-    height / 2, // top
-    height / -2, // bottom
-    1, // near
-    100 // far
+    45, // left
+    720/400, // right
+    1, // top
+    100, // bottom
   );
 
-  camera.position.set(0, 0, -10);
+  camera.position.set(0, 0, -5);
   camera.lookAt(0, 0, 0);
 
   // Renderer
@@ -59,15 +55,15 @@ export const Scene = ({ viewPoint }: SceneInterface) => {
   const render = () => {
     if (viewPoint?.x && viewPoint?.y) {
       // Control
-      let toleranceX = -0.0095;
-      let toleranceY = 0.01;
+      let toleranceX = 0.02;
+      let toleranceY = 0.02;
 
       let centerX = 720 * 0.5;
       let centerY = 560 * 0.5;
 
       console.log(viewPoint);
       camera.position.x = (viewPoint.x - centerX) * toleranceX;
-      // camera.position.y = (viewPoint.y - centerY) * toleranceY;
+      camera.position.y = (viewPoint.y - centerY) * toleranceY;
       camera.position.z = -10;
       camera.position.y = 0;
       camera.lookAt(0, 0, 0);
