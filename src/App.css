@@ -3,15 +3,24 @@ body {
   padding: 0;
   width: 100vw;
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* display: flex; */
+  /* justify-content: center;
+  align-items: center; */
+}
+
+#root {
+  positoin: relative;
 }
 
 button {
   position: relative;
 }
 
+video {
+  position: absolute;
+}
+
 canvas {
   position: absolute;
+  z-index: 100
 }

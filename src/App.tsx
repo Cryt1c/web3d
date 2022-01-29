@@ -42,11 +42,12 @@ const App = () => {
   const [distance, setDistance] = useState<number>();
   const [showScene, setShowScene] = useState(false);
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
     let canvas, displaySize;
     if (videoElement.current?.width && videoElement.current?.height) {
       canvas = createCanvasFromMedia(videoElement.current);
-      document.body.append(canvas);
+      const root = document.querySelector("#root");
+      root.append(canvas);
       displaySize = {
         width: videoElement?.current?.width,
         height: videoElement?.current?.height,
@@ -54,40 +55,33 @@ const App = () => {
     }
     matchDimensions(canvas, displaySize);
 
-    loadModels()
-      .then(() => {
-        matchDimensions(canvas, displaySize);
-        setInterval(async () => {
-          const detections = await detectSingleFace(
-            videoElement.current,
-            new TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.5 })
-          ).withFaceLandmarks();
-          if (canvas && displaySize && detections) {
-            // canvas
-            //   .getContext("2d")
-            //   .clearRect(0, 0, canvas.width, canvas.height);
-            const resizedDimensions = resizeResults(detections, displaySize);
-            const leftEye = calcPointAverage(
-              resizedDimensions.landmarks.getLeftEye()
-            );
-            const rightEye = calcPointAverage(
-              resizedDimensions.landmarks.getRightEye()
-            );
-            // canvas
-            //   .getContext("2d")
-            //   .fillRect(leftEye.x - 5, leftEye.y - 5, 10, 10);
-            // canvas
-            //   .getContext("2d")
-            //   .fillRect(rightEye.x - 5, rightEye.y - 5, 10, 10);
+    await loadModels();
+    matchDimensions(canvas, displaySize);
+    setInterval(async () => {
+      const detections = await detectSingleFace(
+        videoElement.current,
+        new TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.5 })
+      ).withFaceLandmarks();
+      if (canvas && displaySize && detections) {
+        const resizedDimensions = resizeResults(detections, displaySize);
+        const leftEye = calcPointAverage(
+          resizedDimensions.landmarks.getLeftEye()
+        );
+        const rightEye = calcPointAverage(
+          resizedDimensions.landmarks.getRightEye()
+        );
+        if (!showScene) {
+          canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+          canvas.getContext("2d").fillRect(leftEye.x, leftEye.y, 10, 10);
+          canvas.getContext("2d").fillRect(rightEye.x, rightEye.y, 10, 10);
+        }
 
-            if (leftEye && rightEye) {
-              setEye(calcPointAverage([leftEye, rightEye]));
-              setDistance(rightEye.sub(leftEye).magnitude());
-            }
-          }
-        }, 100);
-      })
-      .catch((error) => console.log(error));
+        if (leftEye && rightEye) {
+          setEye(calcPointAverage([leftEye, rightEye]));
+          setDistance(rightEye.sub(leftEye).magnitude());
+        }
+      }
+    }, 100);
   };
 
   useEffect(() => {
