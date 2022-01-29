@@ -2,6 +2,7 @@ import { Point } from "face-api.js";
 import React from "react";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { Canvas } from "@react-three/fiber";
 
 interface SceneInterface {
   viewPoint: Point;
@@ -34,7 +35,6 @@ const render = (viewPoint, distance, scene, camera, renderer) => {
 export const Scene = ({ viewPoint, distance }: SceneInterface) => {
   // Scene
   const scene = new THREE.Scene();
-
   // Add a cube to the scene
   const geometry = new THREE.BoxGeometry(1, 1, 1); // width, height, depth
   const material = new THREE.MeshLambertMaterial({ color: 0xfb8e00 });
@@ -75,7 +75,7 @@ export const Scene = ({ viewPoint, distance }: SceneInterface) => {
     return () => {};
   }, [renderer.domElement]);
 
-  render(viewPoint, distance, scene, camera, renderer)
+  render(viewPoint, distance, scene, camera, renderer);
 
   return (
     <>
