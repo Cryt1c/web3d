@@ -2,7 +2,6 @@ import { Point } from "face-api.js";
 import React from "react";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { Canvas } from "@react-three/fiber";
 
 interface SceneInterface {
   viewPoint: Point;
