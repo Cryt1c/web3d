@@ -8,6 +8,29 @@ interface SceneInterface {
   distance: number;
 }
 
+//Render loop
+const render = (viewPoint, distance, scene, camera, renderer) => {
+  if (viewPoint?.x && viewPoint?.y) {
+    // Control
+    let toleranceX = 0.02;
+    let toleranceY = -0.02;
+    let toleranceZ = 0.02;
+
+    let centerX = 720 * 0.5;
+    let centerY = 400 * 0.5;
+    let centerZ = 60;
+
+    camera.position.x = (viewPoint.x - centerX) * toleranceX;
+    camera.position.y = (viewPoint.y - centerY) * toleranceY;
+    camera.position.z = -10 + (distance - centerZ) * toleranceZ;
+    camera.lookAt(0, 0, 0);
+  }
+  requestAnimationFrame(() =>
+    render(viewPoint, distance, scene, camera, renderer)
+  );
+  renderer.render(scene, camera);
+};
+
 export const Scene = ({ viewPoint, distance }: SceneInterface) => {
   // Scene
   const scene = new THREE.Scene();
@@ -52,28 +75,7 @@ export const Scene = ({ viewPoint, distance }: SceneInterface) => {
     return () => {};
   }, [renderer.domElement]);
 
-  //Render loop
-  const render = () => {
-    if (viewPoint?.x && viewPoint?.y) {
-      // Control
-      let toleranceX = 0.02;
-      let toleranceY = -0.02;
-      let toleranceZ = 0.02;
-
-      let centerX = 720 * 0.5;
-      let centerY = 400 * 0.5;
-      let centerZ = 60;
-
-      camera.position.x = (viewPoint.x - centerX) * toleranceX;
-      camera.position.y = (viewPoint.y - centerY) * toleranceY;
-      camera.position.z = -10 + (distance - centerZ) * toleranceZ;
-      camera.lookAt(0, 0, 0);
-    }
-    requestAnimationFrame(render);
-    renderer.render(scene, camera);
-  };
-
-  render();
+  render(viewPoint, distance, scene, camera, renderer)
 
   return (
     <>
