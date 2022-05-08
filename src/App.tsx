@@ -3,7 +3,7 @@ import Detection from "./components/Detection";
 import ReactScene from "./components/ReactScene";
 
 const App = () => {
-  return <ReactScene />;
+  return <Detection />;
 };
 
 export default App;
