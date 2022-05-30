@@ -92,12 +92,12 @@ const Detection = () => {
 
   const calculatePosition = (eye) => {
     // Control
-    let toleranceX = -0.02;
-    let toleranceY = -0.02;
+    let toleranceX = -0.01;
+    let toleranceY = -0.01;
     //  let toleranceZ = 0.02;
 
     let centerX = 720 * 0.5;
-    let centerY = 400 * 0.5;
+    let centerY = 560 * 0.5;
     //  let centerZ = 60;
 
     setPosition({

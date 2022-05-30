@@ -39,6 +39,7 @@ const ReactScene = ({ position }) => {
           <boxGeometry args={[1, 1, 1]} />
           <meshLambertMaterial color={0xfb8e00} />
         </mesh>
+        <gridHelper />
       </Canvas>
     </div>
   );
