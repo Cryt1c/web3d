@@ -9,7 +9,8 @@ import {
   matchDimensions,
   Point,
 } from "face-api.js";
-import { Scene } from "./Scene";
+import ReactScene from "./ReactScene";
+import { Position } from "@react-three/drei/helpers/Position";
 
 const loadModels = async () => {
   await nets.tinyYolov2.loadFromUri("/models");
@@ -38,7 +39,7 @@ const calcPointAverage = (points: Point[]): Point => {
 
 const Detection = () => {
   const videoElement = useRef<HTMLVideoElement>();
-  const [eye, setEye] = useState<any>();
+  const [position, setPosition] = useState<any>({ x: 0, y: 0 });
   const [distance, setDistance] = useState<number>();
   const [showScene, setShowScene] = useState(false);
 
@@ -77,7 +78,7 @@ const Detection = () => {
         }
 
         if (leftEye && rightEye) {
-          setEye(calcPointAverage([leftEye, rightEye]));
+          calculatePosition(calcPointAverage([leftEye, rightEye]));
           setDistance(rightEye.sub(leftEye).magnitude());
         }
       }
@@ -88,6 +89,22 @@ const Detection = () => {
     startVideo(videoElement.current);
     return () => {};
   }, []);
+
+  const calculatePosition = (eye) => {
+    // Control
+    let toleranceX = -0.02;
+    let toleranceY = -0.02;
+    //  let toleranceZ = 0.02;
+
+    let centerX = 720 * 0.5;
+    let centerY = 400 * 0.5;
+    //  let centerZ = 60;
+
+    setPosition({
+      x: (eye.x - centerX) * toleranceX,
+      y: (eye.y - centerY) * toleranceY,
+    });
+  };
 
   return (
     <>
@@ -100,7 +117,11 @@ const Detection = () => {
         muted
         onPlay={handlePlay}
       ></video>
-      {showScene && <Scene viewPoint={eye} distance={distance}></Scene>}
+      {showScene && (
+        <ReactScene
+          position={{ x: position.x, y: position.y, z: 3 }}
+        ></ReactScene>
+      )}
     </>
   );
 };
